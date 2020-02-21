@@ -1,8 +1,8 @@
 class Department():
-    def __init__(self, dept_no=None, dept_name=None, floor=None):
-        self.__dept_no = dept_no
-        self.__dept_name = dept_name
-        self.__floor = floor
+    def __init__(self, **kargs):
+        self.__dept_no = kargs['dept_no'] if 'dept_no' in kargs else None
+        self.__dept_name = kargs['dept_name'] if 'dept_name' in kargs else None
+        self.__floor = kargs['floor'] if 'floor' in kargs else None
 
     @property
     def dept_no(self):  # getter

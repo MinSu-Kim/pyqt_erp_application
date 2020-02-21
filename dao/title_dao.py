@@ -1,59 +1,42 @@
 import inspect
 
 from mysql.connector import Error
+from pymysql import IntegrityError
 
-from dao.abs_dao import Dao
-
-
-class TitleDao(Dao):
-    def __init__(self):
-        super().__init__()
-
-    def insert_item(self,  title_no=None, title_name=None):
-        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
-        sql = "insert into title values(%s, %s)"
-        args = (title_no, title_name)
-        try:
-            res = self.do_query(query=sql, kargs=args)
-            print(res)
-        except Error as err:
-            raise err
-
-    def update_item(self, title_no=None, title_name=None):
-        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
-        sql = "UPDATE title SET title_name=%s WHERE title_no=%s"
-        args = (title_name, title_no)
-        try:
-            res = self.do_query(query=sql, kargs=args)
-            print(res)
-            return True
-        except Error:
-            return False
-
-    def delete_item(self, title_no=None):
-        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
-        sql = "DELETE FROM title WHERE title_no=%s"
-        args = (title_no,)
-        try:
-            res= self.do_query(query=sql, kargs=args)
-            print(res)
-            return True
-        except Error:
-            return False
-
-    def select_item(self, **kargs):
-        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
-        sql = "select title_no, title_name from title"
-        try:
-            res = self.do_query(query=sql)
-            print(res)
-            return res
-        except Error:
-            return False
+from dao.abs_dao import Dao, do_query
+from dao.singleton_instance import SingleTonInstance
 
 
+class TitleDao(Dao, SingleTonInstance):
 
-if __name__ == '__main__':
-    tdao = TitleDao()
-    tdao.select_item()
+    def insert_item(self, sql='insert into title values(%s, %s)', **kargs):
+        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, kargs, end=' => '))
+        return do_query(query=sql, kargs=tuple([v for v in kargs.values()]))
 
+    def update_item(self, sql='UPDATE title SET title_name=%s WHERE title_no=%s', **kargs):
+        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, kargs, end=' => '))
+        return do_query(query=sql, kargs=tuple([v for v in kargs.values()]))
+
+    def delete_item(self, sql='DELETE FROM title WHERE title_no=%s', **kargs):
+        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, kargs, end=' => '))
+        return do_query(query=sql, kargs=tuple([v for v in kargs.values()]))
+
+    def select_item(self, sql="select title_no, title_name from title", **kargs):
+        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, kargs, end=' => '))
+        return do_query(query=sql, kargs=tuple([v for v in kargs.values()]))
+
+
+if __name__ == "__main__":
+    try:
+        print(TitleDao.instance().select_item(
+            sql='select title_no, title_name from title where title_no = %s and title_name = %s',
+            **{'title_no': 1, 'title_name': '사장'}))
+        # TitleDao.instance().insert_item(**{'title_no': 6, 'title_name': '인턴'})
+        print(TitleDao.instance().select_item())
+        TitleDao.instance().update_item(**{'title_name': '계약직', 'title_no': 6})
+        print(TitleDao.instance().select_item())
+
+        TitleDao.instance().delete_item(**{'title_no': 6})
+        print(TitleDao.instance().select_item())
+    except IntegrityError as e:
+        print(e)

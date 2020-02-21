@@ -4,7 +4,7 @@ from dto.Title import Title
 
 class Employee():
     def __init__(self, **kwargs):
-        self.__emp_no = int(kwargs['emp_no'])
+        self.__emp_no = int(kwargs['emp_no']) if 'emp_no' in kwargs else None
         self.__emp_name = kwargs['emp_name'] if 'emp_name' in kwargs else None
         self.__gender = kwargs['gender'] if 'gender' in kwargs else None
         self.__dept = kwargs['dept'] if 'dept' in kwargs else None
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     kargs = {'emp_no': 1, 'emp_name': '김민수', 'gender': True, 'dept': Department(dept_no=1),
              'manager': Employee(**{'emp_no': 1}),
              'salary': 1500000, 'title': Title(title_no=1), 'hire_date': '2020-02-18'}
-
+    [print(k, end=', ') for k, v in kargs.items()]
     empList = [Employee(**kargs), Employee(**kargs)]
 
     [print(e) for e in empList]

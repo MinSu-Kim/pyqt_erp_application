@@ -1,8 +1,4 @@
-import inspect
 from abc import ABCMeta, abstractmethod
-
-from mysql.connector import Error
-
 from dbconnection.db_pool import DatabasePool
 
 
@@ -13,6 +9,30 @@ def iter_row(cursor, size=5):
             break
         for row in rows:
             yield row
+
+
+def get_dto(**args):
+    return tuple(v for k, v in args.items())
+
+
+def do_query(**kwargs):
+    with DatabasePool() as conn:
+        cursor = conn.cursor()
+        if 'select' in kwargs['query'].lower():
+            if kwargs['kargs'] is not None:
+                cursor.execute(kwargs['query'], kwargs['kargs'])
+            else:
+                cursor.execute(kwargs['query'])
+            res = []
+            [res.append(get_dto(**row)) for row in iter_row(cursor, 5)]
+        else:
+            if kwargs['kargs'] is not None:
+                cursor.execute(kwargs['query'], kwargs['kargs'])
+            else:
+                cursor.execute(kwargs['query'])
+            conn.commit()
+            res = f"{cursor.rowcount} rows affected."
+        return res
 
 
 class Dao(metaclass=ABCMeta):
@@ -33,19 +53,3 @@ class Dao(metaclass=ABCMeta):
     def select_item(self, **kwargs):
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def do_query(self, **kwargs):
-        with DatabasePool() as conn:
-            cursor = conn.cursor()
-            if 'SELECT'.lower() not in kwargs['query'].lower():
-                if kwargs['kargs'] is not None:
-                    cursor.execute(kwargs['query'], kwargs['kargs'])
-                else:
-                    cursor.execute(kwargs['query'])
-                conn.commit()
-                affected = f"{cursor.rowcount} rows affected."
-                return affected
-            else:
-                cursor.execute(kwargs['query'])
-                res = []
-                [res.append(row) for row in iter_row(cursor, 5)]
-                return res

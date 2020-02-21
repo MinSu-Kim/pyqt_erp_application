@@ -1,7 +1,7 @@
-class Title():
-    def __init__(self, title_no=None, title_name=None):
-        self.__title_no = title_no
-        self.__title_name = title_name
+class Title:
+    def __init__(self, **kargs):
+        self.__title_no = kargs['title_no'] if 'title_no' in kargs else None
+        self.__title_name = kargs['title_name'] if 'title_name' in kargs else None
 
     @property
     def title_no(self):  # getter
@@ -46,17 +46,16 @@ if __name__ == "__main__":
     t1.title_name = '부장'
     print(t1)
 
-    t2 = Title(title_no=1, title_name='인턴')
+    t2 = Title(**{'title_no': 1, 'title_name': '인턴'})
     print(t2)
 
-    titleList = [Title(), Title(title_no=1), Title(title_no=1, title_name='영업')]
+    titleList = [Title(), Title(**{'title_no': 1}), Title(**{'title_no': 1, 'title_name': '영업'})]
     for obj in titleList:
         print(obj)
 
-    t3 = Title(title_no=1, title_name='인턴')
+    t3 = Title(**{'title_no': 1, 'title_name': '인턴'})
     print(t2 == t3)  # __iter__
     print(set([t1, t2, t3]))  # __hash__
 
     for title in set([t1, t2, t3]):
         print(title)
-

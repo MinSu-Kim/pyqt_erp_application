@@ -12,16 +12,10 @@ class TitleTableViewWidget(AbstractTableViewWidget):
     def __init__(self):
         super().__init__()
 
-        # table_data = [(1,'사장'),(2, '부장')]
         header = ['직책 코드', '직책 명']
-        tdao = TitleDao()
-        list = tdao.select_item()
-
-        table_data = []
-        for row in list:
-            list = [v for k, v in row.items()]
-            table_data.append(tuple(list))
-
+        # tdao = TitleDao()
+        # table_data = tdao.select_item()
+        table_data = TitleDao.instance().select_item()
         self.model = TitleTableModel(data=table_data, header=header )
         self.tableView.setModel(self.model)
 
