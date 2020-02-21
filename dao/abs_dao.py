@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 from mysql.connector import Error
 
-from dbconnection.db_connecton import DatabaseConnectionPool
+from dbconnection.db_pool import DatabasePool
 
 
 def iter_row(cursor, size=5):
@@ -16,9 +16,6 @@ def iter_row(cursor, size=5):
 
 
 class Dao(metaclass=ABCMeta):
-    def __init__(self):
-        def __init__(self):
-            self.conn = DatabaseConnectionPool.get_instance().get_connection()
 
     @abstractmethod
     def insert_item(self, **kwargs):
@@ -37,17 +34,18 @@ class Dao(metaclass=ABCMeta):
         raise NotImplementedError("Subclass must implement abstract method")
 
     def do_query(self, **kwargs):
-        print("\n______ {}() ______".format(inspect.stack()[0][3]))
-        try:
-            cursor = self.conn.cursor()
-            if kwargs['p_args'] is not None:
-                cursor.execute(kwargs['query'], kwargs['kargs'])
+        with DatabasePool() as conn:
+            cursor = conn.cursor()
+            if 'SELECT'.lower() not in kwargs['query'].lower():
+                if kwargs['kargs'] is not None:
+                    cursor.execute(kwargs['query'], kwargs['kargs'])
+                else:
+                    cursor.execute(kwargs['query'])
+                conn.commit()
+                affected = f"{cursor.rowcount} rows affected."
+                return affected
             else:
                 cursor.execute(kwargs['query'])
-            self.conn.commit()
-        except Error as e:
-            print(e)
-            raise e
-        finally:
-            cursor.close()
-            self.conn.close()
+                res = []
+                [res.append(row) for row in iter_row(cursor, 5)]
+                return res

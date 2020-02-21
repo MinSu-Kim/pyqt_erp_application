@@ -2,56 +2,58 @@ import inspect
 
 from mysql.connector import Error
 
-from dao.abs_dao import Dao, iter_row
-from dbconnection.db_connecton import DatabaseConnectionPool
+from dao.abs_dao import Dao
 
 
 class TitleDao(Dao):
+    def __init__(self):
+        super().__init__()
 
-
-    def insert_item(self, code=None, name=None):
-        print("\n______ {}() ______".format(inspect.stack()[0][3]))
+    def insert_item(self,  title_no=None, title_name=None):
+        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
         sql = "insert into title values(%s, %s)"
-        args = (code, name)
+        args = (title_no, title_name)
         try:
-            self.do_query(query=sql, kargs=args)
+            res = self.do_query(query=sql, kargs=args)
+            print(res)
         except Error as err:
             raise err
 
-    def update_item(self, code=None, price=None, saleCnt=None, marginPrice=None, no=None):
-        print("\n______ {}() ______".format(inspect.stack()[0][3]))
-        sql = "UPDATE sale SET code=%s, price=%s, saleCnt=%s, marginRate=%s WHERE no={}"
-        args = (code, price, saleCnt, marginPrice, no)
+    def update_item(self, title_no=None, title_name=None):
+        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
+        sql = "UPDATE title SET title_name=%s WHERE title_no=%s"
+        args = (title_name, title_no)
         try:
-            self.do_query(query=sql, kargs=args)
+            res = self.do_query(query=sql, kargs=args)
+            print(res)
             return True
         except Error:
             return False
 
-    def delete_item(self, no=None):
-        print("\n______ {}() ______".format(inspect.stack()[0][3]))
-        sql = "DELETE FROM sale WHERE no=%s"
-        args = (no,)
+    def delete_item(self, title_no=None):
+        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
+        sql = "DELETE FROM title WHERE title_no=%s"
+        args = (title_no,)
         try:
-            self.do_query(query=sql, kargs=args)
+            res= self.do_query(query=sql, kargs=args)
+            print(res)
             return True
         except Error:
             return False
 
-    def select_item(self, no=None):
-        print("\n______ {}() ______".format(inspect.stack()[0][3]))
+    def select_item(self, **kargs):
+        print("\n{}()".format(inspect.stack()[0][3]), end=' => ')
+        sql = "select title_no, title_name from title"
         try:
-            conn = self.connection_pool.get_connection()
-            cursor = conn.cursor()
-            sql = "SELECT no, code, price, saleCnt, marginRate FROM sale"
-            where = " where no = %s"
-            cursor.execute(sql) if no is None else cursor.execute(sql.join(where), (no,))
-            res = []
-            [res.append(row) for row in iter_row(cursor, 5)]
+            res = self.do_query(query=sql)
             print(res)
             return res
-        except Error as e:
-            print(e)
-        finally:
-            cursor.close()
-            conn.close()
+        except Error:
+            return False
+
+
+
+if __name__ == '__main__':
+    tdao = TitleDao()
+    tdao.select_item()
+
