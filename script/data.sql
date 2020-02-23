@@ -25,7 +25,8 @@ insert into employee(emp_no, emp_name, title, manager, salary, dept, pass, hire_
 (3427, '최종철', 5, 3011, 1500000, 3, password('1234567'), '2017-06-15', TRUE);
 
 
-select * from employee;
+select * from title;
+delete from title where title_no=1;
 
 /* 우분투 MySQL Timezone 설정방법
 select @@global.time_zone, @@session.time_zone;

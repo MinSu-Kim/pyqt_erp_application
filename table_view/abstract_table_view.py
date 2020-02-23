@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QAbstractItemView
+from PyQt5.QtWidgets import *
 
 from model.abstract_table_model import AbstractTableModel
 
@@ -10,21 +10,20 @@ from model.abstract_table_model import AbstractTableModel
 class AbstractTableViewWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi('ui/table_view.ui')
-
+        # self.ui = uic.loadUi('../ui/table_view.ui')
+        self.tableView = QTableView()
         # create the view
-        self.tableView = self.ui.custom_table_view
+        # self.tableView = self.ui.custom_table_view
         self.model = None
 
         # table view 설정
         self.set_table_view_config()
+        layout = QGridLayout()
+        layout.addWidget(self.tableView)
+        self.setLayout(layout)
 
     @abstractmethod
     def set_column_size(self):
-        """
-        self.tableView.horizontalHeader().resizeSection(0, 40)
-        self.tableView.horizontalHeader().resizeSection(1, 50)
-        """
         raise NotImplementedError("Subclass must implement abstract method")
 
     def set_table_view_config(self):
