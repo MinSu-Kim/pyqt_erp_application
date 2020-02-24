@@ -1,10 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
-from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
-
-from model.abstract_table_model import AbstractTableModel
 
 
 class AbstractTableViewWidget(QWidget):
@@ -39,8 +36,5 @@ class AbstractTableViewWidget(QWidget):
         self.tableView.setShowGrid(True)
         # row단위 선택
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectRows)
-        # 헤더의 내용을 tableView의 크기에 맞춤(아래 3가지 방법)
+        # 헤더의 내용을 tableView의 크기에 맞춤
         self.tableView.horizontalHeader().setStretchLastSection(True)
-        # 모든 컬럼의 사이즈를 동일하게 맞춤
-        # self.tableView.resizeColumnsToContents()
-        # self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)

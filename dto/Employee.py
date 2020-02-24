@@ -4,14 +4,16 @@ from dto.Title import Title
 
 class Employee():
     def __init__(self, **kwargs):
-        self.__emp_no = int(kwargs['emp_no']) if 'emp_no' in kwargs else None
+        # emp_no, emp_name, title, manager, salary, dept, hire_date, gender
+        self.__emp_no = kwargs['emp_no'] if 'emp_no' in kwargs else None
         self.__emp_name = kwargs['emp_name'] if 'emp_name' in kwargs else None
-        self.__gender = kwargs['gender'] if 'gender' in kwargs else None
-        self.__dept = kwargs['dept'] if 'dept' in kwargs else None
+        self.__title = kwargs['title'] if 'title' in kwargs else None
         self.__manager = kwargs['manager'] if 'manager' in kwargs else None
         self.__salary = int(kwargs['salary']) if 'salary' in kwargs else None
-        self.__title = kwargs['title'] if 'title' in kwargs else None
+        self.__dept = kwargs['dept'] if 'dept' in kwargs else None
         self.__hire_date = kwargs['hire_date'] if 'hire_date' in kwargs else None
+        self.__passwd = kwargs['passwd'] if 'passwd' in kwargs else None
+        self.__gender = kwargs['gender'] if 'gender' in kwargs else None
         self.__pic = len(kwargs['pic']) if 'pic' in kwargs else None
         self.__len = kwargs.__len__()
 
@@ -21,7 +23,7 @@ class Employee():
 
     @emp_no.setter
     def emp_no(self, emp_no):
-        self.__emp_no = int(emp_no)
+        self.__emp_no = emp_no
 
     @property
     def emp_name(self):
@@ -80,6 +82,14 @@ class Employee():
         self.__hire_date = hire_date
 
     @property
+    def passwd(self):
+        return self.__passwd
+
+    @passwd.setter
+    def passwd(self, passwd):
+        self.__passwd = passwd
+
+    @property
     def pic(self):
         return self.__pic
 
@@ -91,36 +101,49 @@ class Employee():
         return tuple(self) == tuple(other)
 
     def __iter__(self):
-        return (i for i in (
-        self.__emp_no, self.__emp_name, self.__gender, self.__dept, self.__manager, self.__salary, self.__title,
-        self.__hire_date))
+        # emp_no, emp_name, gender, dept, manager, salary, title, hire_date, password
+        return (i for i in (self.__emp_no, self.__emp_name, self.__gender, self.__dept, self.__manager, self.__salary, self.__title, self.__hire_date))
 
     def __repr__(self) -> str:
         class_name = type(self).__name__
         str_format = '{}('
         for k in range(self.__len):
             str_format += '{!r},'
-        str_format = str_format[:len(str_format) - 1] + ')'
+        if len(str_format) == 3:
+            str_format += ')'
+        else:
+            str_format = str_format[:len(str_format) - 1] + ')'
         return str_format.format(class_name, *self)
-        # return '{}({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(class_name, *self)
 
     def __hash__(self):
         return hash(self.__emp_no) ^ hash(self.__emp_name)
 
+    def get_to_dict(self):
+        return {
+            'emp_no': self.__emp_no,
+            'emp_name': self.__emp_name,
+            'gender': self.__gender,
+            'dept': self.__dept,
+            'manager': self.__manager,
+            'salary': self.__salary,
+            'title': self.__title,
+            'hire_date': self.__hire_date,
+            'pic': self.__pic
+        }
 
 if __name__ == "__main__":
     kargs = {'emp_no': 1, 'emp_name': '김민수', 'gender': True, 'dept': Department(dept_no=1),
              'manager': Employee(**{'emp_no': 1}),
-             'salary': 1500000, 'title': Title(title_no=1), 'hire_date': '2020-02-18'}
+             'salary': 1500000, 'title': Title(title_no=1), 'hire_date': '2020-02-18',
+             'password':'1234'}
     [print(k, end=', ') for k, v in kargs.items()]
     empList = [Employee(**kargs), Employee(**kargs)]
 
-    [print(e) for e in empList]
+    [print(e.get_to_dict()) for e in empList]
 
     print(empList[0] == empList[1])
 
-    print(Employee(**{'emp_no': 1, 'emp_name': '김민수'}))
+    print(Employee(**{'emp_no': 1, 'emp_name': '김민수'}).get_to_dict())
 
-    # print(empList[0].__dict__)
-    for key, value in empList[0].__dict__.items():
-        print(key, type(value), value)
+    print(tuple(empList[1]))
+

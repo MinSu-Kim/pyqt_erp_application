@@ -14,26 +14,27 @@ def iter_row(cursor, size=5):
 class Dao(metaclass=ABCMeta):
 
     @abstractmethod
-    def insert_item(self, **kwargs):
+    def insert_item(self, dto):
         raise NotImplementedError("Subclass must implement abstract method")
 
     @abstractmethod
-    def update_item(self, **kwargs):
+    def update_item(self, dto):
         raise NotImplementedError("Subclass must implement abstract method")
 
     @abstractmethod
-    def delete_item(self, **kwargs):
+    def delete_item(self, dto):
         raise NotImplementedError("Subclass must implement abstract method")
 
     @abstractmethod
-    def select_item(self, **kwargs):
+    def select_item(self, dto):
         raise NotImplementedError("Subclass must implement abstract method")
 
     @abstractmethod
-    def get_dto(self, **args):
+    def get_dto(self, dto):
         raise NotImplementedError("Subclass must implement abstract method")
 
     def do_query(self, **kwargs):
+        print(kwargs)
         with DatabasePool() as conn:
             cursor = conn.cursor()
             if 'select' in kwargs['query'].lower():
@@ -51,5 +52,3 @@ class Dao(metaclass=ABCMeta):
                 conn.commit()
                 res = f"{cursor.rowcount} rows affected."
             return res
-        # return tuple(v for k, v in args.items())
-        #return tuple(v for k, v in args.items())

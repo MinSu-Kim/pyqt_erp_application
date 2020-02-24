@@ -1,19 +1,18 @@
 import inspect
-import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 
-from content.title_content_view import TitleContentWidget
-from dao.title_dao import TitleDao
-from table_view.title_table_view import TitleTableViewWidget
+from content.emp_content_view import EmployeeContentWidget
+from dao.employee_dao import EmployeeDao
+from table_view.employee_table_view import EmployeeTableViewWidget
 
 
-class TitleWidgetView(QWidget):
+class EmployeeWidgetView(QWidget):
     def __init__(self):
         super().__init__()
-        self.title_item = TitleContentWidget()
-        self.table_view = TitleTableViewWidget()
+        self.title_item = EmployeeContentWidget()
+        self.table_view = EmployeeTableViewWidget()
         self.set_table_idx = None
 
         self.add_btn = QPushButton('추가')
@@ -49,7 +48,7 @@ class TitleWidgetView(QWidget):
     def delete_item(self):
         try:
             selcted_item = self.table_view.get_selected_item() # {'idx':selected_index.row(), 'item':title}
-            TitleDao.instance().delete_item(dto=selcted_item['item'])
+            EmployeeDao.instance().delete_item(dto=selcted_item['item'])
             self.table_view.delete_item(selcted_item['idx'])
         except Exception as err:
             raise err
@@ -58,14 +57,14 @@ class TitleWidgetView(QWidget):
         title = self.title_item.get_item()
         if self.add_btn.text() == '추가':
             try:
-                TitleDao.instance().insert_item(dto=title)
+                EmployeeDao.instance().insert_item(dto=title)
                 self.table_view.add_item(title)
                 self.title_item.clear_line_edit()
             except Exception as err:
                 raise err
         else:
             try:
-                TitleDao.instance().update_item(dto=title)
+                EmployeeDao.instance().update_item(dto=title)
                 self.table_view.update_item(self.set_table_idx, title)
                 self.add_btn.setText('추가')
                 self.title_item.clear_line_edit()
@@ -86,6 +85,6 @@ class TitleWidgetView(QWidget):
 
 if __name__ == '__main__':
     app = QApplication([])
-    window = TitleWidgetView()
+    window = EmployeeWidgetView()
     window.show()
     app.exec()

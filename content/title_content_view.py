@@ -13,17 +13,20 @@ class TitleContentWidget(QWidget):
 
     def init_component(self, root_layout):
         item_size = QSize(0, 40)
-        self.lbl_no = QLabel('Title No', self)
+
+        self.lbl_no = QLabel('직책번호', self)
         self.lbl_no.setAlignment(Qt.AlignCenter)
         self.lbl_no.setMinimumSize(item_size)
-        self.lbl_name = QLabel('Title Name', self)
+        self.lbl_name = QLabel('직책명', self)
         self.lbl_name.setAlignment(Qt.AlignCenter)
         self.lbl_name.setMinimumSize(item_size)
+
         self.le_no = QLineEdit()
         self.le_no.setMinimumSize(item_size)
         self.le_name = QLineEdit()
         self.le_name.setMinimumSize(item_size)
-        echo_group = QGroupBox('Title', self)
+
+        echo_group = QGroupBox('직책', self)
         group_layout = QGridLayout()
         echo_group.setLayout(group_layout)
         group_layout.addWidget(self.lbl_no, 0, 0, 1, 1)
@@ -32,7 +35,7 @@ class TitleContentWidget(QWidget):
         group_layout.addWidget(self.le_name, 1, 1, 1, 1)
         root_layout.addWidget(echo_group)
 
-    def get_title(self):
+    def get_item(self):
         try:
             title_name = self.le_name.text()
             title_no = self.le_no.text()
@@ -42,7 +45,7 @@ class TitleContentWidget(QWidget):
         except Exception as err:
             print(err)
 
-    def set_title(self, title):
+    def set_item(self, title):
         self.le_no.setText(str(title.title_no))
         self.le_name.setText(title.title_name)
 

@@ -22,7 +22,7 @@ class Department():
 
     @property
     def floor(self):
-        return self.floor
+        return self.__floor
 
     @floor.setter
     def floor(self, floor):
@@ -43,11 +43,18 @@ class Department():
             str_format += '{!r},'
         if self.__floor is not None:
             str_format += '{!r},'
-        str_format = str_format[:len(str_format) - 1] + ')'
+        if len(str_format) == 3:
+            str_format += ')'
+        else:
+            str_format = str_format[:len(str_format) - 1] + ')'
         return str_format.format(class_name, *self)
+
 
     def __hash__(self):
         return hash(self.__dept_no) ^ hash(self.__dept_name) ^ hash(self.__floor)
+
+    def get_item_dict(self):
+        return {'dept_no': self.__dept_no, 'dept_name': self.__dept_name, 'floor':self.__floor}
 
 
 if __name__ == "__main__":
@@ -73,3 +80,4 @@ if __name__ == "__main__":
 
     for d in set([dept, dept2, dept2]):
         print(d)
+        print(d.get_item_dict())

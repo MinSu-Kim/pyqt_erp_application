@@ -1,17 +1,9 @@
 from PyQt5.QtCore import QAbstractTableModel, QVariant, Qt
 
+from model.abstract_table_model import AbstractTableModel
 
-class DepartmentTableModel(QAbstractTableModel):
-    def __init__(self, data=None, header=None):
-        super().__init__()
-        self.data = data or [()]
-        self.header = header or [()]
 
-    def rowCount(self, parent):
-        return len(self.data)
-
-    def columnCount(self, parent):
-        return len(self.data[0])
+class DepartmentTableModel(AbstractTableModel):
 
     def data(self, index, role):
         if not index.isValid():
@@ -22,8 +14,3 @@ class DepartmentTableModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return QVariant()
         return self.data[index.row()][index.column()]
-
-    def headerData(self, col, orientation, role):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return QVariant(self.header[col])
-        return QVariant()
