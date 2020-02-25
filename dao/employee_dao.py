@@ -44,8 +44,17 @@ class EmployeeDao(Dao, SingleTonInstance):
     def select_item(self, sql='select emp_no, emp_name, title, manager, salary, dept, hire_date, gender from employee', dto=None):
         print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
         if dto is not None:
-            t = (dto.emp_no,)
+            if isinstance(dto, Employee):
+                t = (dto.emp_no,)
+            if isinstance(dto, Department):
+                t = (dto.dept_no,)
         return self.do_query(query=sql, kargs=t if dto is not None else None)
+
+    # def select_manager(self, sql='select emp_no, emp_name from employee where dept = %s', dto=None):
+    #     print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
+    #     if dto is not None:
+    #         t = (dto.dept,)
+    #     return self.do_query(query=sql, kargs=t if dto is not None else None)
 
     def get_dto(self, **args):
         print('get_dto ', args)

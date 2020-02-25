@@ -23,11 +23,7 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="b4618125-581a-4436-aadf-92eac7e1ad06">
-        <schema name="pyqt_erp" object-types="table, index, dataset trigger, column, view, function, constraint, procedure" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="b4618125-581a-4436-aadf-92eac7e1ad06">
