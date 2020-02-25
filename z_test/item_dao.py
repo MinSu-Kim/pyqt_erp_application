@@ -71,6 +71,9 @@ class ItemDao:
 
 
 if __name__ == "__main__":
-    print(ItemDao.select_item("select title_no, title_name from title"))
-    print(ItemDao.select_item("select dept_no, dept_name, floor from department"))
-    print(ItemDao.select_item("select emp_no, emp_name, gender, dept, manager, salary, title, hire_date from employee"))
+    # print(ItemDao.select_item("select title_no, title_name from title"))
+    # print(ItemDao.select_item("select dept_no, dept_name, floor from department"))
+    # print(ItemDao.select_item("select emp_no, emp_name, gender, dept, manager, salary, title, hire_date from employee"))
+
+    str = '조민희(1003)'
+    print(str[:-4])

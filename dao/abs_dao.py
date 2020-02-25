@@ -35,20 +35,23 @@ class Dao(metaclass=ABCMeta):
 
     def do_query(self, **kwargs):
         print(kwargs)
-        with DatabasePool() as conn:
-            cursor = conn.cursor()
-            if 'select' in kwargs['query'].lower():
-                if kwargs['kargs'] is not None:
-                    cursor.execute(kwargs['query'], kwargs['kargs'])
+        try:
+            with DatabasePool() as conn:
+                cursor = conn.cursor()
+                if 'select' in kwargs['query'].lower():
+                    if kwargs['kargs'] is not None:
+                        cursor.execute(kwargs['query'], kwargs['kargs'])
+                    else:
+                        cursor.execute(kwargs['query'])
+                    res = []
+                    [res.append(self.get_dto(**row)) for row in iter_row(cursor, 5)]
                 else:
-                    cursor.execute(kwargs['query'])
-                res = []
-                [res.append(self.get_dto(**row)) for row in iter_row(cursor, 5)]
-            else:
-                if kwargs['kargs'] is not None:
-                    cursor.execute(kwargs['query'], kwargs['kargs'])
-                else:
-                    cursor.execute(kwargs['query'])
-                conn.commit()
-                res = f"{cursor.rowcount} rows affected."
-            return res
+                    if kwargs['kargs'] is not None:
+                        cursor.execute(kwargs['query'], kwargs['kargs'])
+                    else:
+                        cursor.execute(kwargs['query'])
+                    conn.commit()
+                    res = f"{cursor.rowcount} rows affected."
+                return res
+        except Exception as err:
+            print(err)

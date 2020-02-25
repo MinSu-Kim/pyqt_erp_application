@@ -23,7 +23,11 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="b4618125-581a-4436-aadf-92eac7e1ad06">
+        <schema name="pyqt_erp" object-types="index, table, procedure, view, constraint, dataset trigger, function, column" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="b4618125-581a-4436-aadf-92eac7e1ad06">
@@ -37,7 +41,7 @@
     <connection id="b4618125-581a-4436-aadf-92eac7e1ad06" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="b4618125-581a-4436-aadf-92eac7e1ad06" dataset="pyqt_erp.employee" active-filter-id="" />
+    <filter-actions connection-id="b4618125-581a-4436-aadf-92eac7e1ad06" dataset="pyqt_erp.employee" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

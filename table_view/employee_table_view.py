@@ -16,8 +16,9 @@ class EmployeeTableViewWidget(AbstractTableViewWidget):
     def __init__(self):
         super().__init__()
         # select emp_no, emp_name, title, manager, salary, dept, hire_date, gender from employee
-        header = ['사원번호', '사원명', '성별', '부서', '직속상사', '급여', '직책', '입사일']
-        self.table_data = [tuple(employee) for employee in EmployeeDao.instance().select_item()]
+        header = ['사원번호', '사원명', '성별', '부서', '직속상사', '급여', '직책', '입사일', '증명사진']
+        self.row_data = EmployeeDao.instance().select_item()
+        self.table_data = [tuple(employee)[:-1] for employee in self.row_data]
         print(self.table_data)
         self.model = EmployeeTableModel(data=self.table_data, header=header )
         self.tableView.setModel(self.model)
@@ -31,6 +32,7 @@ class EmployeeTableViewWidget(AbstractTableViewWidget):
         self.tableView.horizontalHeader().resizeSection(5, 50)
         self.tableView.horizontalHeader().resizeSection(6, 40)
         self.tableView.horizontalHeader().resizeSection(7, 50)
+        self.tableView.horizontalHeader().resizeSection(8, 50)
 
     def delete_item(self, delete_idx):
         try:
@@ -52,10 +54,7 @@ class EmployeeTableViewWidget(AbstractTableViewWidget):
         try:
             selected_row_index = self.tableView.selectedIndexes()[0].row()
             tuple_title = self.table_data[selected_row_index] #tuple
-            emp = self.table_data[selected_row_index]
-            # emp = Employee()
-            # emp.title_no = tuple_title[0]
-            # emp.title_name = tuple_title[1]
+            emp = self.row_data[selected_row_index]
             return {'idx': selected_row_index, 'item': emp}
         except Exception as err:
             print(err)

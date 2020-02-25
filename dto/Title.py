@@ -51,6 +51,7 @@ if __name__ == "__main__":
     t1.title_no = 2
     t1.title_name = '부장'
     print(t1)
+    print(t1.title_no)
     print(type(tuple(t1)), tuple(t1))
     print(t1.get_to_dict(), vars(t1))
     print(t1.__class__.__name__)

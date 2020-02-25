@@ -24,8 +24,11 @@ insert into employee(emp_no, emp_name, title, manager, salary, dept, pass, hire_
 (2106, '김창섭', 4, 1003, 2500000, 2, password('1234567'), '2016-05-14', TRUE),
 (3427, '최종철', 5, 3011, 1500000, 3, password('1234567'), '2017-06-15', TRUE);
 
-select emp_no, emp_name, title, manager, salary, dept, pass, hire_date, gender, pic from employee;
-select * from employee;
+select emp_no, emp_name, title, manager, salary, dept, pass, hire_date, gender, if (pic is not null, 1, 0)
+ from employee;
+
+select if (pic is null, 0, 1) from employee;
+
 select * from title;
 delete from title where title_no=1;
 

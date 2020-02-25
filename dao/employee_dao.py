@@ -13,27 +13,15 @@ from dto.Title import Title
 
 class EmployeeDao(Dao, SingleTonInstance):
 
-    def insert_item(self, sql='insert into employee(emp_no, emp_name, gender, dept, manager, salary, title, hire_date, pass) values(%s, %s, %s, %s, %s, %s, %s, %s, password(%s))', dto=None):
+    def insert_item(self, sql='insert into employee(emp_no, emp_name, gender, dept, manager, salary, title, hire_date, pic, pass) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, password(%s))', dto=None):
         print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
-        dto.dept = dto.dept.dept_no
-        dto.title = dto.title.title_no
-        dto.manager = dto.manager.emp_no
-        t = tuple(dto)
-        print(t)
+        print(dto.get_to_dict())
+        print(dto)
         return self.do_query(query=sql, kargs=tuple(dto))
 
-    def update_img(self, sql='update employee set pic=%s where emp_no=%s', dto=None):
+    def update_item(self, sql='UPDATE employee SET emp_name=%s, gender=%s, dept=%s, manager=%s, salary=%s, title=%s, hire_date=%s, pass=password(%s), pic=%s WHERE emp_no=%s', dto=None):
         print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
-        t = dto.pic, dto.emp_no
-        return self.do_query(query=sql, kargs=t)
-
-    def update_item(self, sql='UPDATE employee SET emp_name=%s, gender=%s, dept=%s, manager=%s, salary=%s, title=%s, hire_date=%s, pass=password(%s) WHERE emp_no=%s', dto=None):
-        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
-        dto.dept = dto.dept.dept_no
-        dto.title = dto.title.title_no
-        dto.manager = dto.manager.emp_no
-
-        t = dto.emp_name, dto.gender, dto.dept, dto.manager, dto.salary, dto.title, dto.hire_date, dto.passwd, dto.emp_no
+        t = dto.emp_name, dto.gender, dto.dept, dto.manager, dto.salary, dto.title, dto.hire_date, dto.passwd, dto.pic, dto.emp_no
         return self.do_query(query=sql, kargs=t)
 
     def delete_item(self, sql='delete from employee where emp_no=%s', dto=None):
@@ -41,7 +29,7 @@ class EmployeeDao(Dao, SingleTonInstance):
         t = (dto.emp_no,)
         return self.do_query(query=sql, kargs=t)
 
-    def select_item(self, sql='select emp_no, emp_name, title, manager, salary, dept, hire_date, gender from employee', dto=None):
+    def select_item(self, sql='select emp_no, emp_name, title, manager, salary, dept, hire_date, gender, if (pic is not null, 1, 0) as pic from employee', dto=None):
         print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
         if dto is not None:
             if isinstance(dto, Employee):
@@ -50,11 +38,10 @@ class EmployeeDao(Dao, SingleTonInstance):
                 t = (dto.dept_no,)
         return self.do_query(query=sql, kargs=t if dto is not None else None)
 
-    # def select_manager(self, sql='select emp_no, emp_name from employee where dept = %s', dto=None):
-    #     print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
-    #     if dto is not None:
-    #         t = (dto.dept,)
-    #     return self.do_query(query=sql, kargs=t if dto is not None else None)
+    def select_pic_by_empno(self, sql='select pic from employee where emp_no = %s', dto=None):
+        print("\n{}() {} {}".format(inspect.stack()[0][3], sql, dto, end=' => '))
+        t = (dto.emp_no,)
+        return self.do_query(query=sql, kargs=t)
 
     def get_dto(self, **args):
         print('get_dto ', args)
@@ -74,7 +61,16 @@ def __write_file(self, data, filename):
     os.rename(filename, filename+'.'+file_ext)
     return str(filename+'.'+file_ext)
 
+
 if __name__ == "__main__":
+    try:
+        emp = Employee()
+        emp.emp_no = 1003
+        res = EmployeeDao.instance().select_pic_by_empno(dto=emp)
+        print(type(res), res)
+    except IntegrityError as e:
+        print(e)
+"""
     try:
         print(EmployeeDao.instance().select_item())
 
@@ -116,4 +112,4 @@ if __name__ == "__main__":
         print(EmployeeDao.instance().select_item())
     except IntegrityError as e:
         print(e)
-
+"""

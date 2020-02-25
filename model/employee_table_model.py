@@ -9,7 +9,7 @@ class EmployeeTableModel(AbstractTableModel):
         if not index.isValid():
             return QVariant()
         if role == Qt.TextAlignmentRole:
-            if index.column() in [0, 1, 2, 3, 4, 6, 7]:
+            if index.column() in [0, 1, 2, 3, 4, 6, 7, 8]:
                 return Qt.AlignCenter
             if index.column() in [5]:
                 return Qt.AlignRight
@@ -22,5 +22,7 @@ class EmployeeTableModel(AbstractTableModel):
                 return format(self.data[index.row()][index.column()], ',')
             if index.column() == 7:
                 return self.data[index.row()][index.column()].strftime("%Y-%m-%d")
+            if index.column() == 8:
+                return '있음' if self.data[index.row()][index.column()] == 1 else '없음'
             else:
                 return self.data[index.row()][index.column()]

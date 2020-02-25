@@ -1,12 +1,13 @@
 import inspect
 
-from PyQt5.QtCore import Qt, QSize, QDate
+from PyQt5.QtCore import Qt, QSize, QDate, qCompress, QBuffer, QByteArray, QIODevice
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 
 from dao.department_dao import DepartmentDao
 from dao.employee_dao import EmployeeDao
 from dao.title_dao import TitleDao
+from dto.Employee import Employee
 
 
 class EmployeeContentWidget(QWidget):
@@ -138,7 +139,7 @@ class EmployeeContentWidget(QWidget):
         self.lbl_img.setFrameShape(QFrame.Box)
         self.lbl_img.setFrameShadow(QFrame.Sunken)
 
-        pixmap = QPixmap('no_img.png')
+        pixmap = QPixmap('../content/no_img.png')
         self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
 
         self.btn_pic = QPushButton('사진 추가')
@@ -188,11 +189,11 @@ class EmployeeContentWidget(QWidget):
         self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
 
         #저장하기
-        pixmap_pic = self.lbl_img.pixmap()
-        print(type(pixmap_pic))
-        img = pixmap.toImage()
-        print(type(img))
-        pixmap.save('test', '.jpg')
+        # pixmap_pic = self.lbl_img.pixmap()
+        # print(type(pixmap_pic))
+        # img = pixmap.toImage()
+        # print(type(img))
+        # pixmap.save('test', '.jpg')
 
     def passwd_valid_check(self):
         if self.le_pass1.text() == self.le_pass2.text():
@@ -201,43 +202,79 @@ class EmployeeContentWidget(QWidget):
             self.lbl_pass_confirm.setText("불일치")
 
     def on_cmb_dept_changed(self, value):
-        print("\n{}() value {}".format(inspect.stack()[0][3], value))
         for dept in self.dept_list:
             if value == dept.dept_name:
-                mgn_list_by_dept = EmployeeDao.instance().select_item(sql='select emp_no, emp_name, dept from employee where dept = %s', dto=dept)
-                mgn_list = ['{}({})'.format(mgr.emp_name, mgr.emp_no) for mgr in mgn_list_by_dept]
+                self.mgn_list_by_dept = EmployeeDao.instance().select_item(sql='select emp_no, emp_name, dept from employee where dept = %s', dto=dept)
+                mgn_list = ['{}({})'.format(mgr.emp_name, mgr.emp_no) for mgr in self.mgn_list_by_dept]
                 self.cb_manager.clear()
                 self.cb_manager.addItems(mgn_list)
                 self.cb_manager.setCurrentIndex(-1)
 
-"""
     def get_item(self):
         try:
-            dept_no = self.le_no.text()
-            dept_name = self.le_name.text()
-            floor = self.le_floor.text()
-            dept = Department(**{'dept_no': int(dept_no), 'dept_name': dept_name, 'floor':floor})
-            print(dept)
-            return dept;
+            emp = Employee()
+            emp.emp_no = int(self.le_no.text())
+            emp.emp_name = self.le_name.text()
+            emp.salary = self.sp_salary.value()
+            emp.passwd = self.le_pass1.text()
+            emp.hire_date = self.de_hire_date.date().toString("yyyy-MM-dd")
+            emp.gender = True if self.rb_male.isChecked() else False
+            emp.dept = [dept.dept_no for dept in self.dept_list if self.cb_dept.currentText() == dept.dept_name][0]
+            emp.manager = self.cb_manager.currentText()[4:-1] #'조민희(1003)'-> 1003
+            emp.title = [title.title_no for title in self.title_list if self.cb_title.currentText() == title.title_name][0]
+
+            pixmap = self.lbl_img.pixmap()
+            bytearray = QByteArray()
+            buffer = QBuffer(bytearray)
+            buffer.open(QIODevice.WriteOnly)
+            pixmap.save(buffer, "PNG")
+            emp.pic = bytearray.data() # qImage to bytearray
+
+            return emp;
         except Exception as err:
             print(err)
 
-    def set_item(self, dept):
-        self.le_no.setText(str(dept.dept_no))
-        self.le_name.setText(dept.dept_name)
-        self.le_floor.setText(str(dept.floor))
+    def set_item(self, emp):
+        self.le_no.setText(str(emp.emp_no))
+        self.le_name.setText(emp.emp_name)
+        self.sp_salary.setValue(emp.salary)
+        self.le_pass1.setText('')
+        self.le_pass2.setText('')
+        self.lbl_pass_confirm.setText('')
+        self.de_hire_date.setDate(emp.hire_date)
 
+        if emp.gender is True:
+            self.rb_male.setChecked(True)
+        else:
+            self.rb_female.setChecked(True)
+        self.cb_dept.clear()
+        self.cb_dept.addItems([dept.dept_name for dept in self.dept_list])
+        [self.cb_dept.setCurrentText(dept.dept_name) for dept in self.dept_list if emp.dept == dept.dept_no]
+        [self.cb_manager.setCurrentText('{}({})'.format(manager.emp_name, manager.emp_no)) for manager in self.mgn_list_by_dept if emp.manager == manager.emp_no]
+        [self.cb_title.setCurrentText(title.title_name) for title in self.title_list if emp.title == title.title_no]
+
+        emp_pic = QPixmap()
+        if emp.pic == 1:
+            emp = EmployeeDao.instance().select_pic_by_empno(dto=emp)[0]
+            emp_pic.loadFromData(emp.pic)
+        else:
+            emp_pic = QPixmap('../content/no_img.png')
+        self.lbl_img.setPixmap(emp_pic.scaled(150, 275, Qt.KeepAspectRatio))
 
     def clear_line_edit(self):
         self.le_no.setText('')
-        self.le_name
         self.le_name.setText('')
-        self.le_floor.setText('')
-
-"""
-
-if __name__ == '__main__':
-    app = QApplication([])
-    t = EmployeeContentWidget()
-    t.show()
-    app.exec()
+        self.sp_salary.setValue(1500000)
+        self.le_pass1.setText('')
+        self.le_pass2.setText('')
+        self.lbl_pass_confirm.setText('')
+        self.de_hire_date.setDate(QDate.currentDate())
+        self.rb_male.setChecked(True)
+        self.cb_dept.clear()
+        self.cb_dept.addItems([dept.dept_name for dept in self.dept_list])
+        self.cb_dept.setCurrentIndex(-1)
+        self.cb_manager.clear()
+        self.cb_manager.setCurrentIndex(-1)
+        self.cb_title.setCurrentIndex(-1)
+        pixmap = QPixmap('../content/no_img.png')
+        self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
