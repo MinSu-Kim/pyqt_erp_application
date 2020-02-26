@@ -104,8 +104,9 @@ class Employee():
 
     @pic.setter
     def pic(self, pic):
+        if self.__pic is None:
+            self.__len += 1
         self.__pic = pic
-        self.__len += 1
 
     def __eq__(self, other):
         return tuple(self) == tuple(other)
@@ -151,6 +152,7 @@ if __name__ == "__main__":
     [print(k, end=', ') for k, v in kargs.items()]
     empList = [Employee(**kargs), Employee(**kargs)]
 
+    empList.append(Employee(**{'emp_no':2}))
     [print(e.get_to_dict()) for e in empList]
 
     print(empList[0] == empList[1])

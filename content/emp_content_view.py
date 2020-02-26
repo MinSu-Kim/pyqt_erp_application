@@ -1,4 +1,6 @@
+import imghdr
 import inspect
+import os
 
 from PyQt5.QtCore import Qt, QSize, QDate, qCompress, QBuffer, QByteArray, QIODevice
 from PyQt5.QtGui import QPixmap
@@ -19,6 +21,7 @@ class EmployeeContentWidget(QWidget):
 
     def init_component(self, root_layout):
         item_size = QSize(150, 40)
+        self.file_name = '../content/no_img.png'
 
         self.lbl_no = QLabel('사원 번호', self)
         self.lbl_no.setAlignment(Qt.AlignCenter)
@@ -139,7 +142,7 @@ class EmployeeContentWidget(QWidget):
         self.lbl_img.setFrameShape(QFrame.Box)
         self.lbl_img.setFrameShadow(QFrame.Sunken)
 
-        pixmap = QPixmap('../content/no_img.png')
+        pixmap = QPixmap(self.file_name)
         self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
 
         self.btn_pic = QPushButton('사진 추가')
@@ -183,9 +186,9 @@ class EmployeeContentWidget(QWidget):
         root_layout.addWidget(echo_group)
 
     def file_open(self):
-        fname = QFileDialog.getOpenFileName(self)
+        self.file_name = QFileDialog.getOpenFileName(self)[0]
         pixmap = QPixmap()
-        pixmap.load(fname[0])
+        pixmap.load(self.file_name)
         self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
 
         #저장하기
@@ -204,7 +207,7 @@ class EmployeeContentWidget(QWidget):
     def on_cmb_dept_changed(self, value):
         for dept in self.dept_list:
             if value == dept.dept_name:
-                self.mgn_list_by_dept = EmployeeDao.instance().select_item(sql='select emp_no, emp_name, dept from employee where dept = %s', dto=dept)
+                self.mgn_list_by_dept = EmployeeDao.instance().select_item(sql='select emp_no, emp_name, dept from employee where dept = %s or manager is null', dto=dept)
                 mgn_list = ['{}({})'.format(mgr.emp_name, mgr.emp_no) for mgr in self.mgn_list_by_dept]
                 self.cb_manager.clear()
                 self.cb_manager.addItems(mgn_list)
@@ -217,20 +220,23 @@ class EmployeeContentWidget(QWidget):
             emp.emp_name = self.le_name.text()
             emp.salary = self.sp_salary.value()
             emp.passwd = self.le_pass1.text()
-            emp.hire_date = self.de_hire_date.date().toString("yyyy-MM-dd")
-            emp.gender = True if self.rb_male.isChecked() else False
+            # emp.hire_date = self.de_hire_date.date().toString("yyyy-MM-dd")
+            emp.hire_date = self.de_hire_date.dateTime().toPyDateTime()
+            emp.gender = 1 if self.rb_male.isChecked() else 0
             emp.dept = [dept.dept_no for dept in self.dept_list if self.cb_dept.currentText() == dept.dept_name][0]
-            emp.manager = self.cb_manager.currentText()[4:-1] #'조민희(1003)'-> 1003
+            emp.manager = int(self.cb_manager.currentText()[4:-1]) #'조민희(1003)'-> 1003
             emp.title = [title.title_no for title in self.title_list if self.cb_title.currentText() == title.title_name][0]
 
+            ba = QByteArray()
+            buff = QBuffer(ba)
+            buff.open(QIODevice.WriteOnly)
             pixmap = self.lbl_img.pixmap()
-            bytearray = QByteArray()
-            buffer = QBuffer(bytearray)
-            buffer.open(QIODevice.WriteOnly)
-            pixmap.save(buffer, "PNG")
-            emp.pic = bytearray.data() # qImage to bytearray
+            pixmap.save(buff, 'PNG')
+            pixmap_bytes = ba.data()
 
-            return emp;
+            emp.pic = pixmap_bytes
+
+            return emp
         except Exception as err:
             print(err)
 
@@ -243,7 +249,7 @@ class EmployeeContentWidget(QWidget):
         self.lbl_pass_confirm.setText('')
         self.de_hire_date.setDate(emp.hire_date)
 
-        if emp.gender is True:
+        if emp.gender == 1:
             self.rb_male.setChecked(True)
         else:
             self.rb_female.setChecked(True)
@@ -278,3 +284,10 @@ class EmployeeContentWidget(QWidget):
         self.cb_title.setCurrentIndex(-1)
         pixmap = QPixmap('../content/no_img.png')
         self.lbl_img.setPixmap(pixmap.scaled(150, 275, Qt.KeepAspectRatio))
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    window = EmployeeContentWidget()
+    window.show()
+    app.exec()

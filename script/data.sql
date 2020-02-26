@@ -55,3 +55,6 @@ https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html#time-zone-install
 */
 
 select * from employee;
+
+select emp_no, emp_name, dept from employee where dept = 1 or manager is null;
+

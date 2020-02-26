@@ -12,7 +12,7 @@ class EmployeeTableModel(AbstractTableModel):
             if index.column() in [0, 1, 2, 3, 4, 6, 7, 8]:
                 return Qt.AlignCenter
             if index.column() in [5]:
-                return Qt.AlignRight
+                return Qt.AlignVCenter | Qt.AlignRight
         if role != Qt.DisplayRole:
             return QVariant()
         if role == Qt.DisplayRole :

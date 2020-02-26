@@ -25,7 +25,7 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="b4618125-581a-4436-aadf-92eac7e1ad06">
-        <schema name="pyqt_erp" object-types="index, table, procedure, view, constraint, dataset trigger, function, column" />
+        <schema name="pyqt_erp" object-types="column, table, view, function" />
       </connection>
     </loaded-nodes>
   </component>
